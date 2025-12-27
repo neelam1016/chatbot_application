@@ -1,0 +1,11 @@
+
+@import url("https://fonts.googleapis.com/css?family=Light 300");
+
+.App{
+  min-height: 100vh;
+  display: flex;
+  background-image: url('./background.png');
+  background-size: cover;
+  background-position: center;
+  color: #000;
+}
