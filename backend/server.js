@@ -24,8 +24,28 @@ const app = express()
 // Configure dotenv to use the custom path for .env
 // dotenv.config({ path: path.join(__dirname, "./.env") });
 dotenv.config();
+
+const defaultOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:5173",
+];
+
+const getAllowedOrigins = () => {
+  const raw = process.env.CORS_ORIGIN;
+  if (!raw) return defaultOrigins;
+  return raw
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+};
+
+const allowedOrigins = getAllowedOrigins();
+
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"],
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -66,7 +86,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
