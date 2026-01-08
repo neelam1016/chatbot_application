@@ -34,7 +34,7 @@ import {
     SimpleGrid,
 } from "@chakra-ui/react";
 import { SearchIcon, AddIcon, HamburgerIcon, ArrowBackIcon, ArrowForwardIcon, CloseIcon } from "@chakra-ui/icons";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
@@ -58,7 +58,7 @@ const EMOJI_SET = [
         const [selectedChat, setSelectedChat] = useState(null);
         const [inputValue, setInputValue] = useState("");
         const [messages, setMessages] = useState([]);
-        const [loadingMessages, setLoadingMessages] = useState(false);
+        const [loadingMessages,setLoadingMessages] = useState(false);
         const [assistantUser, setAssistantUser] = useState(null);
         const [assistantPending, setAssistantPending] = useState(false);
         const [chatSearch, setChatSearch] = useState("");
@@ -78,14 +78,14 @@ const EMOJI_SET = [
         const messageInputRef = useRef(null);
 
         const history = useHistory();
-        const formatTime = (t) => {
+        const formatTime = useCallback((t) => {
             if (!t) return "";
             try {
                 return new Date(t).toLocaleString();
             } catch (e) {
                 return String(t);
             }
-        };
+        }, []);
         const getDayKey = (value) => {
             if (!value) return "";
             const d = new Date(value);
@@ -157,7 +157,7 @@ const EMOJI_SET = [
             }
         };
 
-        const markMessageAsRead = async ({ messageId, chatId } = {}) => {
+        const markMessageAsRead = useCallback(async ({ messageId, chatId } = {}) => {
             if (!messageId && !chatId) return;
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
@@ -167,7 +167,7 @@ const EMOJI_SET = [
             } catch (err) {
                 console.error('Failed to mark message as read', err);
             }
-        };
+        }, []);
 
         const markChatAsRead = async (chat) => {
             const chatId = chat && (chat.id || chat._id || (chat.raw && chat.raw._id));
@@ -230,7 +230,7 @@ const EMOJI_SET = [
             selectedChatRef.current = selectedChat;
         }, [selectedChat]);
 
-        const updateChatFromMessage = (newMessage) => {
+        const updateChatFromMessage = useCallback((newMessage) => {
             const incomingChatId = newMessage && newMessage.chat && (newMessage.chat._id || newMessage.chat);
             if (!incomingChatId) return;
             const activeChat = selectedChatRef.current;
@@ -252,7 +252,7 @@ const EMOJI_SET = [
                 if (!updatedChat) return prev;
                 return [updatedChat, ...next.filter((c) => c !== updatedChat)];
             });
-        };
+        }, [formatTime]);
 
         useEffect(() => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
@@ -300,7 +300,7 @@ const EMOJI_SET = [
                     socketRef.current.disconnect();
                 }
             };
-        }, []);
+        }, [markMessageAsRead, updateChatFromMessage]);
 
         useEffect(() => {
             if (!selectedChat || !socketRef.current) return;
@@ -406,7 +406,7 @@ const EMOJI_SET = [
                         setLoadingUsers(false);
                     }
                 })();
-            }, [isOpen]);
+            }, [isOpen, assistantId]);
 
             const toggleUser = (id) => setSelectedUsers(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
@@ -923,6 +923,11 @@ const EMOJI_SET = [
                                 </Flex>
 
                                 <Box ref={messagesContainerRef} display="flex" flexDir="column" overflowY="auto" minH="0" flex="1 1 0" sx={{ '&::-webkit-scrollbar': { width: '8px' }, '&::-webkit-scrollbar-thumb': { background: '#CBD5E0', borderRadius: '8px' }, '&::-webkit-scrollbar-track': { background: 'transparent' } }} p={4}>
+                                    {loadingMessages && (
+                                        <Flex justify="center" py={2}>
+                                            <Spinner size="sm" />
+                                        </Flex>
+                                    )}
                                     {renderedMessages}
                                 </Box>
 
