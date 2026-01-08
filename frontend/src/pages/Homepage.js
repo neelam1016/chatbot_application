@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Container, Text,Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import { Box, Container, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { Login } from "../components/Authentication/Login";
 import { Signup } from "../components/Authentication/Signup";
 
@@ -28,10 +28,10 @@ export const Homepage = () => {
           </TabList>
           <TabPanels>
             <TabPanel>
-             <Login/>
+              <Login />
             </TabPanel>
             <TabPanel>
-             <Signup/>
+              <Signup />
             </TabPanel>
           </TabPanels>
         </Tabs>

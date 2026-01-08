@@ -1,21 +1,23 @@
-import React,{useState} from "react";
-import { FormControl,FormLabel,Input,InputGroup,VStack,InputRightElement,Button, useToast} from "@chakra-ui/react";
+import React, { useState } from "react";
+import { FormControl, FormLabel, Input, InputGroup, VStack, InputRightElement, Button, useToast } from "@chakra-ui/react";
 import axios from "axios";
-import { useHistory  } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+// import { ChatState } from "../../Context/ChatProvider";
 
 export const Login = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState();
-  const [loading,setLoading]=useState(false)
-  const toast= useToast();
-  
+  const [loading, setLoading] = useState(false)
+  const toast = useToast();
+
 
   const history = useHistory();
+  // const { setUser } = ChatState();
 
-  const submitHandler = async() => {
+  const submitHandler = async () => {
     setLoading(true);
-    if(!email || !password){
+    if (!email || !password) {
       toast({
         title: "Please Fill all the Feilds",
         status: "warning",
@@ -26,37 +28,38 @@ export const Login = () => {
       setLoading(false);
       return;
     }
-    const config={
-      headers:{
-        "Content-type":"application/json"
+    const config = {
+      headers: {
+        "Content-type": "application/json"
       }
     }
-   
-    
-    axios.post(`${process.env.REACT_APP_API_URL}/api/user/login`,{email,password},config)
-    .then((res)=>{
-       localStorage.setItem("userInfo", JSON.stringify(res.data));
-      toast({
-        title: "Login succesfully",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-      history.push("/chats");
-    })
-    .catch((err)=>{
-       console.log("message:", err);
-      toast({
-        title: err.response.data.message || "Error Occured",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-    })
+
+
+    axios.post(`${process.env.REACT_APP_API_URL}/api/user/login`, { email, password }, config)
+      .then((res) => {
+        localStorage.setItem("userInfo", JSON.stringify(res.data));
+        // setUser(res.data);
+        toast({
+          title: "Login succesfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        setLoading(false);
+        history.push("/chats");
+      })
+      .catch((err) => {
+        console.log("message:", err);
+        toast({
+          title: err.response.data.message || "Error Occured",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        setLoading(false);
+      })
 
   };
   const handleClick = () => setShow(!show);
@@ -101,17 +104,18 @@ export const Login = () => {
         Login
       </Button>
       <Button
-      variant="solid"
+        variant="solid"
         colorScheme="red"
         width="100%"
-      
-        onClick={()=>{setEmail('guest@example.com')
-            setPassword("123456")
+
+        onClick={() => {
+          setEmail('guest@example.com')
+          setPassword("123456")
         }
         }
-        
+
       >
-      Get Guest User Credentials
+        Get Guest User Credentials
       </Button>
     </VStack>
   );

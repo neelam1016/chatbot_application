@@ -10,7 +10,8 @@ import {
   useToast
 } from "@chakra-ui/react";
 import axios from 'axios';
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom';
+// import { ChatState } from "../../Context/ChatProvider";
 
 export const Signup = () => {
   const [show, setShow] = useState(false);
@@ -19,16 +20,17 @@ export const Signup = () => {
   const [password, setPassword] = useState();
   const [confirmpassword, setComfirmpassword] = useState();
   const [pic, setPic] = useState();
-  const [picLoading,setPicLoading]=useState(false);
-  const toast=useToast();
+  const [picLoading, setPicLoading] = useState(false);
+  const toast = useToast();
   const history = useHistory();
+  // const { setUser } = ChatState();
 
   const postDetails = (pics) => {
     setPicLoading(true);
-    if(pics === undefined){
+    if (pics === undefined) {
       toast({
         title: 'Please Select an Image',
-        position:"bottom",
+        position: "bottom",
         status: 'warning',
         duration: 5000,
         isClosable: true,
@@ -47,7 +49,7 @@ export const Signup = () => {
       }).then((res) => res.json())
         .then((data) => {
           setPic(data.url.toString());
-          console.log("url image",data.url.toString());
+          console.log("url image", data.url.toString());
           setPicLoading(false);
         })
         .catch((err) => {
@@ -117,6 +119,7 @@ export const Signup = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      // setUser(data);
       setPicLoading(false);
       history.push("/chats");
     } catch (error) {
